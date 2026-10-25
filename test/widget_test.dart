@@ -1,30 +1,28 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
+import 'package:manhua_mobile/controllers/auth_controller.dart';
 import 'package:manhua_mobile/main.dart';
+import 'package:manhua_mobile/screens/login_screen.dart';
+import 'package:manhua_mobile/services/api_service.dart';
+import 'package:manhua_mobile/services/storage_service.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('ManhuaApp boots into LoginScreen when not authenticated', (WidgetTester tester) async {
+    final storage = InMemoryStorageService();
+    final apiService = ApiService(
+      baseUrl: 'http://localhost:8080',
+      client: MockClient((_) async => http.Response('{}', 401)),
+      storage: storage,
+    );
+    final authController = AuthController(apiService: apiService, storage: storage);
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    await tester.pumpWidget(ManhuaApp(
+      apiService: apiService,
+      authController: authController,
+    ));
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.byType(LoginScreen), findsOneWidget);
+    expect(find.text('Manhua Central'), findsOneWidget);
   });
 }
