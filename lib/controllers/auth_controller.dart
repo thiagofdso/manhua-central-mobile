@@ -22,6 +22,12 @@ class AuthController extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
+  @visibleForTesting
+  void setUserForTesting(User user) {
+    _currentUser = user;
+    notifyListeners();
+  }
+
   Future<void> initAuth() async {
     _isLoading = true;
     notifyListeners();

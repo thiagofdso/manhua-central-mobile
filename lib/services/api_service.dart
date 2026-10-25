@@ -334,6 +334,24 @@ class ApiService {
     }
   }
 
+  Future<void> registerFcmToken(String token) async {
+    final jwt = await storage.getAccessToken();
+    if (jwt == null) return;
+
+    final response = await client.post(
+      Uri.parse('$baseUrl/api/users/fcm-token'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $jwt',
+      },
+      body: jsonEncode({'token': token}),
+    );
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw ApiException('Falha ao registrar token FCM', response.statusCode);
+    }
+  }
+
   Future<ChapterImagesResponse> getChapterImages(String slug, int chapter) async {
     final uri = Uri.parse('$baseUrl/api/reader/chapter-images').replace(queryParameters: {
       'slug': slug,
