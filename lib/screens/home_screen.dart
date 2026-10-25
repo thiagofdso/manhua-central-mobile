@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../controllers/auth_controller.dart';
+import 'library_screen.dart';
+import 'catalog_screen.dart';
+import 'rankings_screen.dart';
+import 'profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,9 +16,23 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 
+  final List<Widget> _screens = const [
+    LibraryScreen(),
+    CatalogScreen(),
+    RankingsScreen(),
+    ProfileScreen(),
+  ];
+
+  final List<String> _titles = const [
+    'Minha Biblioteca',
+    'Catálogo Canônico',
+    'Rankings Comunitários',
+    'Meu Perfil',
+  ];
+
   @override
   Widget build(BuildContext context) {
-    final auth = context.watch<AuthController>();
+    context.watch<AuthController>();
 
     return Scaffold(
       backgroundColor: const Color(0xFF090D16),
@@ -32,25 +50,16 @@ class _HomeScreenState extends State<HomeScreen> {
               child: const Icon(Icons.menu_book_rounded, color: Color(0xFF818CF8), size: 18),
             ),
             const SizedBox(width: 8),
-            const Text(
-              'Manhua Central',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+            Text(
+              _titles[_currentIndex],
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
             ),
           ],
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout_rounded, color: Color(0xFF94A3B8)),
-            onPressed: () => auth.logout(),
-            tooltip: 'Sair da conta',
-          ),
-        ],
       ),
-      body: Center(
-        child: Text(
-          'Bem-vindo, ${auth.currentUser?.displayName ?? 'Leitor'}!',
-          style: const TextStyle(color: Colors.white, fontSize: 16),
-        ),
+      body: IndexedStack(
+        index: _currentIndex,
+        children: _screens,
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
