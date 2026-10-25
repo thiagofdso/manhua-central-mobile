@@ -4,6 +4,7 @@ import '../models/user.dart';
 import '../models/manhua.dart';
 import '../models/ranking.dart';
 import '../models/library_item.dart';
+import '../models/reader.dart';
 import 'storage_service.dart';
 
 class ApiException implements Exception {
@@ -330,6 +331,26 @@ class ApiService {
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw ApiException('Falha ao registrar avaliação', response.statusCode);
+    }
+  }
+
+  Future<ChapterImagesResponse> getChapterImages(String slug, int chapter) async {
+    final uri = Uri.parse('$baseUrl/api/reader/chapter-images').replace(queryParameters: {
+      'slug': slug,
+      'chapter': chapter.toString(),
+    });
+    final response = await client.get(uri);
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      final json = jsonDecode(response.body) as Map<String, dynamic>;
+      return ChapterImagesResponse.fromJson(json);
+    } else {
+      String errMsg = 'Falha ao carregar imagens do capítulo';
+      try {
+        final errJson = jsonDecode(response.body);
+        if (errJson['error'] != null) errMsg = errJson['error'];
+      } catch (_) {}
+      throw ApiException(errMsg, response.statusCode);
     }
   }
 }
