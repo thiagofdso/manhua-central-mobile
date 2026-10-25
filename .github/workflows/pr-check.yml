@@ -3,20 +3,24 @@ name: Mobile PR Check & CI
 on:
   pull_request:
     branches:
+      - master
       - main
       - desenv
   push:
     branches:
+      - master
       - main
       - desenv
 
 jobs:
   analyze-and-test:
-    name: Flutter Analyze & Unit Tests
+    name: Flutter Analyze, Tests & SonarQube Cloud
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -38,3 +42,11 @@ jobs:
 
       - name: Run Unit Tests with Coverage
         run: flutter test --coverage
+
+      - name: Build Android App Bundle (.aab)
+        run: flutter build appbundle --release
+
+      - name: SonarQube Cloud Scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
