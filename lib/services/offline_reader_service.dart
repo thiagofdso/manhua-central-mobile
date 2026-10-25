@@ -53,6 +53,21 @@ class OfflineReaderService {
     }
   }
 
+  Future<void> deleteDownloadedManhua(String slug) async {
+    final base = await _getBaseDir();
+    final dir = Directory('${base.path}/$slug');
+    if (dir.existsSync()) {
+      dir.deleteSync(recursive: true);
+    }
+  }
+
+  Future<List<String>> getDownloadedManhuaSlugs() async {
+    final base = await _getBaseDir();
+    if (!base.existsSync()) return [];
+    final dirs = base.listSync().whereType<Directory>().toList();
+    return dirs.map((d) => d.uri.pathSegments.reversed.elementAt(1)).toList();
+  }
+
   Future<int> getTotalDiskUsageBytes() async {
     final base = await _getBaseDir();
     if (!base.existsSync()) return 0;

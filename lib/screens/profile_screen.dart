@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../controllers/auth_controller.dart';
 import '../models/user.dart';
+import 'downloads_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -125,6 +126,25 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 36),
+
+              // Downloads & Storage Management
+              ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const DownloadsScreen()),
+                  );
+                },
+                icon: const Icon(Icons.download_for_offline_outlined, size: 20),
+                label: const Text('Downloads e Armazenamento'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF1E293B),
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size.fromHeight(48),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+              ),
+              const SizedBox(height: 16),
 
               // Logout Button
               OutlinedButton.icon(
